@@ -831,11 +831,13 @@
             } else {
                 document.getElementById("hasSoch").value = "нет";
                 document.getElementById('sochSection').style.display = 'none';
-					}
-				}
-			};
+            }
 
-			reader.readAsArrayBuffer(file);
+            validateForm();
+		}
+	};
+
+		reader.readAsArrayBuffer(file);
 		}
 
 
