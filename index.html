@@ -6,6 +6,8 @@
 	<link rel="icon" href="logo.png" sizes="32x32" type="image/png">
     <title>Калькулятор баллов</title>
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600&display=swap" rel="stylesheet">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+
     <style>
 		select {
 			background-color: #fff;
@@ -44,7 +46,7 @@
         }
 		
 		.form-group {
-            margin-bottom: 20px;
+            margin-bottom: 35px;
         }
 
         .container {
@@ -569,7 +571,7 @@
     <div class="container">
 
 
-        <div class="form-group">
+        <div class="form-group" style="display: flex; gap: 30px; justify-content: space-between;">
             <label for="theme" id="themeLabel">Выберите тему:</label>
             <select id="theme" onchange="changeTheme()">
                 <option value="default">Default</option>
@@ -602,9 +604,7 @@
                 <option value="buttercream">Butter Cream</option>
                 <option value="mandarinpeel">Mandarin Peel</option>
             </select>
-        </div>
-		
-		<div class="form-group">
+        
             <label for="language" id="languageLabel">Выберите язык:</label>
             <select id="language" onchange="changeLanguage()">
                 <option value="ru" id="ru">Русский</option>
@@ -612,25 +612,35 @@
                 <option value="kk" id="kk">Қазақша</option>
             </select>
         </div>
-        <h1 id="title">Калькулятор баллов</h1>
+        <h1 id="title" align="center">Калькулятор процентов</h1>
+		<div class="form-group" style="display: flex; gap: 10px; justify-content: space-between;">
+            <label>Введите данные ниже, либо сделайте импорт из файла:</label>
+			<input type="file" id="import-file" accept=".xlsx" style="display: none;" onchange="importFromExcel(event)">
+			<button onclick="document.getElementById('import-file').click()" class="styled-button">Импорт из Excel</button>
+        </div>
+		<div class="form-group">
+			<a href="https://kundelik.kz/userfeed" target="_blank">
+			<button>Перейти на Kundelik.kz</button>
+			</a>
+		</div>
         <div class="form-group">
             <label for="subject" id="subject-label">Введите название предмета:</label>
-            <input type="text" id="subject">
+            <input type="text" id="subject" oninput="validateForm()">
         </div>
 
         <div class="form-group">
             <label for="foScores" id="foScores-label">Введите ФО:</label>
-            <input type="text" id="foScores" placeholder="Например: 8, 9, 10">
+            <input type="text" id="foScores" oninput="validateForm()" placeholder="Например: 8, 9, 10">
         </div>
 
         <div class="form-group">
             <label for="sorScores" id="sorScores-label">Введите оценки СОР:</label>
-            <input type="text" id="sorScores" placeholder="Например: 8/10, 9/10, 10/10">
+            <input type="text" id="sorScores" oninput="validateForm()" placeholder="Например: 8/10, 9/10, 10/10">
         </div>
 		
         <div class="form-group">
             <label for="hasSoch" id="hasSoch-label">Есть СОЧ?</label>
-            <select id="hasSoch">
+            <select id="hasSoch" oninput="validateForm()">
                 <option value="нет" id="no">Нет</option>
                 <option value="да" id="yes">Да</option>
             </select>
@@ -638,15 +648,23 @@
 
         <div class="form-group" id="sochSection">
             <label for="sochScores" id="sochScores-label">Введите оценку СОЧ:</label>
-            <input type="text" id="sochScores" placeholder="Например: 9/10">
+            <input type="text" id="sochScores" oninput="validateForm()" placeholder="Например: 9/10">
         </div>
 
-        <button id="calculate-button" onclick="calculate()">Рассчитать</button>
-
+        <div style="display: flex; gap: 10px; justify-content: space-between;">
+			<button id="calculate-button" onclick="calculate()" disabled>Рассчитать</button>
+		</div>
         <div class="result" id="result"></div>
-    </div>
+		<div class="form-group">
+			<button id="export-button" onclick="exportToExcel()" class="styled-button" style="display: none;">Экспорт в Excel</button>
 
-    <script>
+		</div>
+		</div>
+		
+
+
+
+		<script>
         const translations = {
             ru: {
                 themeLabel: "Выберите тему:",
@@ -749,6 +767,68 @@
             loadSettings();
         };
 		
+		function validateForm() {
+			const subject = document.getElementById("subject").value.trim();
+			const foScores = document.getElementById("foScores").value.trim();
+			const sorScores = document.getElementById("sorScores").value.trim();
+			const hasSoch = document.getElementById("hasSoch").value;
+			const sochScores = document.getElementById("sochScores").value.trim();
+			const allFieldsFilled = subject !== "" && foScores !== "" && sorScores !== "" && (hasSoch === "нет" || sochScores !== "");
+
+			document.getElementById("calculate-button").disabled = !allFieldsFilled;
+		}
+
+		
+		function exportToExcel() {
+			const subject = document.getElementById("subject").value || 'Предмет';  // Если поле пустое, используем "Предмет" по умолчанию
+			const foScores = document.getElementById("foScores").value;
+			const sorScores = document.getElementById("sorScores").value;
+			const sochScores = document.getElementById("sochScores").value || '0/1';
+		
+			const data = [
+				['Предмет', 'ФО', 'СОР', 'СОЧ'],
+				[subject, foScores, sorScores, sochScores]
+			];
+			const worksheet = XLSX.utils.aoa_to_sheet(data);
+			const workbook = XLSX.utils.book_new();
+			XLSX.utils.book_append_sheet(workbook, worksheet, "Оценки");
+			const filename = `${subject}.xlsx`;
+			XLSX.writeFile(workbook, filename);
+		}
+
+		function importFromExcel(event) {
+			const file = event.target.files[0];
+			const reader = new FileReader();
+
+		reader.onload = function(e) {
+			const data = new Uint8Array(e.target.result);
+			const workbook = XLSX.read(data, { type: 'array' });
+			const sheetName = workbook.SheetNames[0];
+			const worksheet = workbook.Sheets[sheetName];
+			const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+        if (jsonData.length > 1) {
+            document.getElementById("subject").value = jsonData[1][0] || '';
+            document.getElementById("foScores").value = jsonData[1][1] || '';
+            document.getElementById("sorScores").value = jsonData[1][2] || '';
+            document.getElementById("sochScores").value = jsonData[1][3] || '';
+
+            const sochScore = jsonData[1][3];
+            if (sochScore && sochScore !== '0/1') {
+                document.getElementById("hasSoch").value = "да";
+                document.getElementById('sochSection').style.display = 'block';
+            } else {
+                document.getElementById("hasSoch").value = "нет";
+                document.getElementById('sochSection').style.display = 'none';
+					}
+				}
+			};
+
+			reader.readAsArrayBuffer(file);
+		}
+
+
+		
         function calculate() {
             const subject = document.getElementById("subject").value;
             const hasSoch = document.getElementById("hasSoch").value;
@@ -789,6 +869,8 @@
             `;
 
             document.getElementById('result').innerHTML = resultDiv;
+			document.getElementById('export-button').style.display = 'block';
+
         }
 		
         document.getElementById('hasSoch').addEventListener('change', function () {
