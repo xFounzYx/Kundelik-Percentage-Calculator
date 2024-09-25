@@ -571,7 +571,7 @@
     <div class="container">
 
 
-        <div class="form-group" style="display: flex; gap: 30px; justify-content: space-between;">
+        <div style="margin-bottom: 10px">
             <label for="theme" id="themeLabel">Выберите тему:</label>
             <select id="theme" onchange="changeTheme()">
                 <option value="default">Default</option>
@@ -604,7 +604,9 @@
                 <option value="buttercream">Butter Cream</option>
                 <option value="mandarinpeel">Mandarin Peel</option>
             </select>
-        
+			</div>
+		
+		<div style="margin-bottom: 20px">
             <label for="language" id="languageLabel">Выберите язык:</label>
             <select id="language" onchange="changeLanguage()">
                 <option value="ru" id="ru">Русский</option>
@@ -669,7 +671,7 @@
             ru: {
                 themeLabel: "Выберите тему:",
                 languageLabel: "Выберите язык:",
-                title: "Калькулятор баллов",
+                title: "Калькулятор процентов",
                 subjectLabel: "Введите название предмета:",
                 foScoresLabel: "Введите ФО:",
 				foScoresPlaceholder: "Например: 8, 9, 10",
@@ -687,7 +689,7 @@
             en: {
                 themeLabel: "Select Theme:",
                 languageLabel: "Select Language:",
-                title: "Grade Calculator",
+                title: "Percentage Calculator",
                 subjectLabel: "Enter subject name:",
                 foScoresLabel: "Enter FAs:",
 				foScoresPlaceholder: "For example: 8, 9, 10",
@@ -705,7 +707,7 @@
             kk: {
                 themeLabel: "Тақырыпты таңдаңыз:",
                 languageLabel: "Тілді таңдаңыз:",
-                title: "Ұпай калькуляторы",
+                title: "Пайыз калькуляторы",
                 subjectLabel: "Пән атауын енгізіңіз:",
                 foScoresLabel: "ФБ енгізіңіз:",
 				foScoresPlaceholder: "Мысалы: 8, 9, 10",
@@ -777,10 +779,19 @@
 
 			document.getElementById("calculate-button").disabled = !allFieldsFilled;
 		}
+		
+		function showError(message, fieldId) {
+			alert(message);
+			document.getElementById(fieldId).style.borderColor = 'red';
+		}
+	
+		function clearError(fieldId) {
+			document.getElementById(fieldId).style.borderColor = '';
+		}
 
 		
 		function exportToExcel() {
-			const subject = document.getElementById("subject").value || 'Предмет';  // Если поле пустое, используем "Предмет" по умолчанию
+			const subject = document.getElementById("subject").value || 'Предмет';
 			const foScores = document.getElementById("foScores").value;
 			const sorScores = document.getElementById("sorScores").value;
 			const sochScores = document.getElementById("sochScores").value || '0/1';
@@ -830,48 +841,73 @@
 
 		
         function calculate() {
-            const subject = document.getElementById("subject").value;
-            const hasSoch = document.getElementById("hasSoch").value;
-            const foScores = document.getElementById('foScores').value;
-            const sorScoresInput = document.getElementById("sorScores").value;
-            const sochScoresInput = document.getElementById("sochScores").value || '0/1';
+			clearError("foScores");
+			clearError("sorScores");
+			clearError("sochScores");
 
-            const numFo = foScores.split(',').length;
-            const numSor = sorScoresInput.split(',').length;
+			const foScores = document.getElementById('foScores').value.trim();
+			const sorScores = document.getElementById("sorScores").value.trim();
+			const hasSoch = document.getElementById("hasSoch").value;
+			const sochScores = document.getElementById("sochScores").value.trim();
 
-            const sorScoresArray = sorScoresInput.split(',').map(score => score.trim());
-            let sorScores = 0;
-            let sorMax = 0;
+			const foArray = foScores.split(',').map(score => parseInt(score.trim()));
+			for (const score of foArray) {
+				if (isNaN(score) || score < 1 || score > 10) {
+					showError("Оценки ФО должны быть числами от 1 до 10!", "foScores");
+					return;
+				}
+			}
 
-            sorScoresArray.forEach(score => {
-                const [num1, num2] = score.split('/').map(Number);
-                sorScores += num1;
-                sorMax += num2;
-            });
+			const sorArray = sorScores.split(',').map(score => score.trim());
+			for (const score of sorArray) {
+				const [num1, num2] = score.split('/').map(Number);
+				if (isNaN(num1) || isNaN(num2) || num1 < 0 || num1 > num2) {
+					showError("Оценки СОР должны быть в формате X/Y, где X <= Y!", "sorScores");
+					return;
+				}
+			}
 
-            const foScoresArray = foScores.split(',').map(Number);
-            const foScoresSum = foScoresArray.reduce((acc, score) => acc + score, 0);
+			if (hasSoch === "да") {
+				const [num1, num2] = sochScores.split('/').map(Number);
+				if (isNaN(num1) || isNaN(num2) || num1 < 0 || num1 > num2) {
+					showError("Оценка СОЧ должна быть в формате X/Y, где X <= Y!", "sochScores");
+					return;
+				}
+			}
 
-            const foMax = numFo * 10;
-            const percentageFoSor = ((foScoresSum + sorScores) / (foMax + sorMax)) * 50;
+			const subject = document.getElementById("subject").value;
 
-            const [sochScores, sochMax] = sochScoresInput.split('/').map(Number);
-            let percentageSoch = 0;
-            if (hasSoch === "да") {
-                percentageSoch = (sochScores / sochMax) * 50;
-            }
+			const numFo = foArray.length;
+			const sorScoresArray = sorArray.map(score => score.split('/').map(Number));
+			let sorSum = 0;
+			let sorMax = 0;
 
-            const overallPercentage = percentageFoSor + percentageSoch;
+			sorScoresArray.forEach(([score, max]) => {
+				sorSum += score;
+				sorMax += max;
+			});
 
-            const resultDiv = `
-                ${translations[document.getElementById('language').value].resultSubject}: ${subject}<br>
-                ${translations[document.getElementById('language').value].resultOverall}: ${percentageFoSor.toFixed(1)}% + ${percentageSoch.toFixed(1)}% = ${overallPercentage.toFixed(0)}%
-            `;
+			const foSum = foArray.reduce((acc, score) => acc + score, 0);
+			const foMax = numFo * 10;
 
-            document.getElementById('result').innerHTML = resultDiv;
-			document.getElementById('export-button').style.display = 'block';
+			const percentageFoSor = ((foSum + sorSum) / (foMax + sorMax)) * 50;
 
-        }
+			let percentageSoch = 0;
+			if (hasSoch === "да") {
+				const [sochScore, sochMax] = sochScores.split('/').map(Number);
+				percentageSoch = (sochScore / sochMax) * 50;
+			}
+
+			const overallPercentage = percentageFoSor + percentageSoch;
+
+			const resultDiv = `
+				${translations[document.getElementById('language').value].resultSubject}: ${subject}<br>
+				${translations[document.getElementById('language').value].resultOverall}: ${percentageFoSor.toFixed(1)}% + ${percentageSoch.toFixed(1)}% = ${overallPercentage.toFixed(0)}%
+			`;
+
+		document.getElementById('result').innerHTML = resultDiv;
+		document.getElementById('export-button').style.display = 'block';
+		}
 		
         document.getElementById('hasSoch').addEventListener('change', function () {
             const sochSection = document.getElementById('sochSection');
