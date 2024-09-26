@@ -308,7 +308,20 @@
 			background-color: #ffd700;
 			color: #1a1a40;
 		}
-
+		.midnight .modal-content {
+			background-color: #fff;
+			color: #0a0a23;
+			margin: 15% auto;
+			padding: 20px;
+			border: 1px solid #888;
+			width: 80%;
+			max-width: 500px;
+			border-radius: 10px;
+			position: relative;
+			transform: scale(0.7);
+			opacity: 0;
+			transition: transform 0.4s ease, opacity 0.4s ease;
+		}
 		body.iceblue {
 			background-color: #e0f2ff;
 			color: #002366;
@@ -372,7 +385,20 @@
 			background-color: #f4e04d;
 			color: #333333;
 		}
-
+		.charcoal .modal-content {
+			background-color: #fff;
+			color: #333333;
+			margin: 15% auto;
+			padding: 20px;
+			border: 1px solid #888;
+			width: 80%;
+			max-width: 500px;
+			border-radius: 10px;
+			position: relative;
+			transform: scale(0.7);
+			opacity: 0;
+			transition: transform 0.4s ease, opacity 0.4s ease;
+		}
 		body.berryblend {
 			background-color: #a4508b;
 			color: #ffe4e1;
@@ -564,6 +590,64 @@
 			background-color: #ffb48f;
 			color: white;
 		}
+		.modal {
+			display: none;
+			position: fixed;
+			z-index: 1;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			overflow: auto;
+			background-color: rgba(0, 0, 0, 0.4);
+		}
+
+		.modal-content {
+			background-color: #fff;
+			margin: 15% auto;
+			padding: 20px;
+			border: 1px solid #888;
+			width: 80%;
+			max-width: 500px;
+			border-radius: 10px;
+			position: relative;
+			transform: scale(0.7);
+			opacity: 0;
+			transition: transform 0.4s ease, opacity 0.4s ease;
+		}
+
+		.close {
+			color: #aaa;
+			position: absolute;
+			top: 10px;
+			right: 20px;
+			font-size: 28px;
+			font-weight: bold;
+		}
+
+		.close:hover, .close:focus {
+			color: black;
+			text-decoration: none;
+			cursor: pointer;
+		}
+
+		@keyframes fadeIn {
+			from {
+				opacity: 0;
+			}
+			to {
+				opacity: 1;
+			}
+		}
+
+		@keyframes fadeOut {
+			from {
+				opacity: 1;
+			}
+			to {
+				opacity: 0;
+			}
+		}
 
     </style>
 </head>
@@ -616,14 +700,17 @@
         </div>
         <h1 id="title" align="center">Калькулятор процентов</h1>
 		<div class="form-group" style="display: flex; gap: 10px; justify-content: space-between;">
-            <label>Введите данные ниже, либо сделайте импорт из файла:</label>
+            <label id="import-label">Введите данные ниже, либо сделайте импорт из файла:</label>
 			<input type="file" id="import-file" accept=".xlsx" style="display: none;" onchange="importFromExcel(event)">
-			<button onclick="document.getElementById('import-file').click()" class="styled-button">Импорт из Excel</button>
+			<button id="import-button" onclick="document.getElementById('import-file').click()" class="styled-button">Импорт из Excel</button>
         </div>
 		<div class="form-group">
 			<a href="https://kundelik.kz/userfeed" target="_blank">
-			<button>Перейти на Kundelik.kz</button>
+			<button id="redirect-button">Перейти в Kundelik.kz</button>
 			</a>
+		</div>
+		<div class="form-group">
+			<button id="instruction-button" onclick="openInstruction()">Инструкция</button>
 		</div>
         <div class="form-group">
             <label for="subject" id="subject-label">Введите название предмета:</label>
@@ -654,12 +741,30 @@
         </div>
 
         <div style="display: flex; gap: 10px; justify-content: space-between;">
-			<button id="calculate-button" onclick="calculate()" disabled>Рассчитать</button>
+			<button id="calculate-button" onclick="calculate()">Рассчитать</button>
 		</div>
         <div class="result" id="result"></div>
 		<div class="form-group">
 			<button id="export-button" onclick="exportToExcel()" class="styled-button" style="display: none;">Экспорт в Excel</button>
-
+		</div>
+		<div id="instruction-modal" class="modal">
+			<div class="modal-content">
+				<span class="close" onclick="closeInstruction()">&times;</span>
+				<h2>Инструкция по эксплуатации</h2>
+				<p>
+					<div class="form-group">
+					1. Введите название предмета. (При экспорте в excel оно используется в качестве названия файла)<br>
+					</div> <div class="form-group">
+					2. Введите оценки ФО и СОР, используя формат "1, 2, 3" для ФО и "1/2, 3/4, 5/6" для СОР.<br>
+					</div> <div class="form-group">
+					3. Если у предмета предусмотрен СОЧ, выберите "Да" и введите оценку СОЧ в формате "1/2". (Если оценка выставляется за полугодие, нужно выбрать "Нет" и вписать оценки <big>за обе четверти</big>)<br>
+					</div> <div class="form-group">
+					4. Нажмите кнопку "Рассчитать", чтобы увидеть ваш результат и итоговую оценку.<br>
+					</div> <div class="form-group">
+					5. Для смены языка или темы используйте выпадающие списки наверху страницы.
+					</div>
+				</p>
+			</div>
 		</div>
 		</div>
 		
@@ -672,6 +777,10 @@
                 themeLabel: "Выберите тему:",
                 languageLabel: "Выберите язык:",
                 title: "Калькулятор процентов",
+				importlabel: "Введите данные ниже, либо сделайте импорт из файла:",
+				importbutton: "Импорт из Excel",
+				redirectbutton: "Перейти в Kundelik.kz",
+				instructionbutton: "Инструкция",
                 subjectLabel: "Введите название предмета:",
                 foScoresLabel: "Введите ФО:",
 				foScoresPlaceholder: "Например: 8, 9, 10",
@@ -684,12 +793,34 @@
 				sochScoresPlaceholder: "Например: 9/10",
                 calculateButton: "Рассчитать",
 				resultSubject: "Предмет",
-                resultOverall: "Ваш общий процент"
+                resultOverall: "Ваш общий процент",
+				resultGrade: "Ваша оценка",
+				exportbutton: "Экспорт в Excel",
+				instruction: `
+						<h2>Инструкция по эксплуатации</h2>
+						<p>
+							<div class="form-group">
+							1. Введите название предмета. (При экспорте в excel оно используется в качестве названия файла)<br>
+							</div> <div class="form-group">
+							2. Введите оценки ФО и СОР, используя формат "1, 2, 3" для ФО и "1/2, 3/4, 5/6" для СОР.<br>
+							</div> <div class="form-group">
+							3. Если у предмета предусмотрен СОЧ, выберите "Да" и введите оценку СОЧ в формате "1/2". (Если оценка выставляется за полугодие, нужно выбрать "Нет" и вписать оценки <big>за обе четверти</big>)<br>
+							</div> <div class="form-group">
+							4. Нажмите кнопку "Рассчитать", чтобы увидеть ваш результат и итоговую оценку.<br>
+							</div> <div class="form-group">
+							5. Для смены языка или темы используйте выпадающие списки наверху страницы.
+							</div>
+						</p>
+					`
             },
             en: {
                 themeLabel: "Select Theme:",
                 languageLabel: "Select Language:",
                 title: "Percentage Calculator",
+				importlabel: "Enter the data below, or import from a file:",
+				importbutton: "Import from Excel",
+				redirectbutton: "Go to Kundelik.kz",
+				instructionbutton: "Instruction",
                 subjectLabel: "Enter subject name:",
                 foScoresLabel: "Enter FAs:",
 				foScoresPlaceholder: "For example: 8, 9, 10",
@@ -702,12 +833,34 @@
 				sochScoresPlaceholder: "For example: 9/10",
                 calculateButton: "Calculate",
                 resultSubject: "Subject",
-                resultOverall: "Your overall percentage"
+                resultOverall: "Your overall percentage",
+				resultGrade: "Your grade",
+				exportbutton: "Export to Excel",
+				instruction: `
+						<h2>Instruction manual</h2>
+						<p>
+							<div class="form-group">
+							1. Enter the name of the subject. (When exporting to excel, it is used as the file name)<br>
+							</div> <div class="form-group">
+							2. Enter the FA and SAU scores using the format "1, 2, 3" for FA and "1/2, 3/4, 5/6" for SAU.<br>
+							</div> <div class="form-group">
+							3. If the subject has a SAT, select "Yes" and enter the SAT grade in the "1/2" format. (If the grade is set for half a year, select "No" and enter the grades <big> for both quarters</big>)<br>
+							</div> <div class="form-group">
+							4. Click the "Calculate" button to see your result and final grade.<br>
+							</div> <div class="form-group">
+							5. To change the language or theme, use the drop-down lists at the top of the page.
+							</div>
+						</p>
+					`
             },
             kk: {
                 themeLabel: "Тақырыпты таңдаңыз:",
                 languageLabel: "Тілді таңдаңыз:",
                 title: "Пайыз калькуляторы",
+				importlabel: "Төмендегі деректерді енгізіңіз немесе файлдан импорттаңыз:",
+				importbutton: "Excel-ден импорттау",
+				redirectbutton: "Өту Kundelik.kz",
+				instructionbutton: "Нұсқаулық",
                 subjectLabel: "Пән атауын енгізіңіз:",
                 foScoresLabel: "ФБ енгізіңіз:",
 				foScoresPlaceholder: "Мысалы: 8, 9, 10",
@@ -720,9 +873,29 @@
 				sochScoresPlaceholder: "Мысалы: 9/10",
                 calculateButton: "Есептеу",
                 resultSubject: "Пән",
-                resultOverall: "Жалпы пайыз"
+                resultOverall: "Жалпы пайыз",
+				resultGrade: "Сіздің бағаңыз",
+				exportbutton: "Excel-ге экспорттау",
+				instruction: `
+					<h2>Пайдалану</h2>
+					<p>
+						<div class="form-group">
+						1. Пән атауын енгізіңіз. (Excel-ге экспорттау кезінде ол Файл атауы ретінде қолданылады)<br>
+						</div> <div class="form-group">
+						2. ФБ үшін "1, 2, 3" және БЖБ үшін "1/2, 3/4, 5/6" пішімін пайдаланып, ФБ және БЖБ бағаларын енгізіңіз.<br>
+						</div> <div class="form-group">
+						3. Егер пәніне ТЖБ болса, "Иә" тармағын таңдап, ТЖБ бағасын "1/2"форматында енгізіңіз. (Егер баға жартыжылдықта қойылса, сіз " жоқ " дегенді таңдап, <big> екі тоқсандағы </big>бағаларды енгізуіңіз керек)<br>
+						</div> <div class="form-group">
+						4. Нәтижені және қорытынды бағаны көру үшін "есептеу" түймесін басыңыз.<br>
+						</div> <div class="form-group">
+						5. Тілді немесе тақырыпты өзгерту үшін беттің жоғарғы жағындағы ашылмалы тізімдерді пайдаланыңыз.
+						</div>
+					</p>
+				`
             }
         };
+		
+		let lastCalculation = null;
 
         function changeLanguage() {
             const language = document.getElementById('language').value;
@@ -730,25 +903,83 @@
             document.getElementById('themeLabel').textContent = strings.themeLabel;
             document.getElementById('languageLabel').textContent = strings.languageLabel;
             document.getElementById('title').textContent = strings.title;
+			document.getElementById('import-label').textContent = strings.importlabel;
+			document.getElementById('import-button').textContent = strings.importbutton;
+			document.getElementById('redirect-button').textContent = strings.redirectbutton;
+			document.getElementById('instruction-button').textContent = strings.instructionbutton;
             document.getElementById('subject-label').textContent = strings.subjectLabel;
             document.getElementById('hasSoch-label').textContent = strings.hasSochLabel;
             document.getElementById('foScores-label').textContent = strings.foScoresLabel;
             document.getElementById('sorScores-label').textContent = strings.sorScoresLabel;
             document.getElementById('sochScores-label').textContent = strings.sochScoresLabel;
             document.getElementById('calculate-button').textContent = strings.calculateButton;
+			document.getElementById('export-button').textContent = strings.exportbutton;
 			document.getElementById('foScores').placeholder = strings.foScoresPlaceholder;
 			document.getElementById('sorScores').placeholder = strings.sorScoresPlaceholder;
 			document.getElementById('sochScores').placeholder = strings.sochScoresPlaceholder;
             document.getElementById('yes').textContent = strings.yes;
             document.getElementById('no').textContent = strings.no;
+			document.querySelector('.modal-content').innerHTML = strings.instruction;
+			if (lastCalculation) {
+				updateResult(lastCalculation);
+			}
 			localStorage.setItem('language', language);
         }
+		
+		function updateResult({ subject, percentageFoSor, percentageSoch, overallPercentage, grade }) {
+			const language = document.getElementById('language').value;
+			const strings = translations[language];
+
+			const resultDiv = `
+				${strings.resultSubject}: ${subject}<br>
+				${strings.resultOverall}: ${percentageFoSor.toFixed(1)}% + ${percentageSoch.toFixed(1)}% = ${overallPercentage.toFixed(0)}%<br>
+				${translations[document.getElementById('language').value].resultGrade} - ${grade}
+			`;
+
+			document.getElementById('result').innerHTML = resultDiv;
+		}
 		
 		function changeTheme() {
             const selectedTheme = document.getElementById('theme').value;
             document.body.className = selectedTheme;
             localStorage.setItem('theme', selectedTheme);
         }
+		
+		function openInstruction() {
+			const modal = document.getElementById("instruction-modal");
+			const modalContent = modal.querySelector(".modal-content");
+
+			modal.style.display = "block";
+			modal.style.animation = "fadeIn 0.4s ease";
+
+			setTimeout(() => {
+				modalContent.style.transform = "scale(1)";
+				modalContent.style.opacity = "1";
+			}, 100);
+		}
+
+		function closeInstruction() {
+			const modal = document.getElementById("instruction-modal");
+			const modalContent = modal.querySelector(".modal-content");
+
+			modalContent.style.transform = "scale(0.7)";
+			modalContent.style.opacity = "0";
+
+			setTimeout(() => {
+				modal.style.animation = "fadeOut 0.4s ease";
+				setTimeout(() => {
+					modal.style.display = "none";
+				}, 400);
+			}, 400);
+		}
+
+		window.onclick = function(event) {
+			const modal = document.getElementById("instruction-modal");
+			if (event.target === modal) {
+				closeInstruction();
+			}
+		}
+		
 		
 		function loadSettings() {
             const savedTheme = localStorage.getItem('theme');
@@ -777,7 +1008,7 @@
 			const sochScores = document.getElementById("sochScores").value.trim();
 			const allFieldsFilled = subject !== "" && foScores !== "" && sorScores !== "" && (hasSoch === "нет" || sochScores !== "");
 
-			document.getElementById("calculate-button").disabled = !allFieldsFilled;
+			
 		}
 		
 		function showError(message, fieldId) {
@@ -835,7 +1066,7 @@
 
             validateForm();
 		}
-	};
+		};
 
 		reader.readAsArrayBuffer(file);
 		}
@@ -843,14 +1074,36 @@
 
 		
         function calculate() {
+			clearError("subject");
 			clearError("foScores");
 			clearError("sorScores");
 			clearError("sochScores");
 
+			const subject = document.getElementById("subject").value.trim();
 			const foScores = document.getElementById('foScores').value.trim();
 			const sorScores = document.getElementById("sorScores").value.trim();
 			const hasSoch = document.getElementById("hasSoch").value;
 			const sochScores = document.getElementById("sochScores").value.trim();
+
+			if (subject === "") {
+				showError("Поле 'Название предмета' не должно быть пустым!", "subject");
+				return;
+			}
+
+			if (foScores === "") {
+				showError("Поле 'ФО' не должно быть пустым!", "foScores");
+				return;
+			}
+
+			if (sorScores === "") {
+				showError("Поле 'СОР' не должно быть пустым!", "sorScores");
+				return;
+			}
+
+			if (hasSoch === "да" && sochScores === "") {
+				showError("Поле 'СОЧ' не должно быть пустым, если СОЧ выбран!", "sochScores");
+				return;
+			}
 
 			const foArray = foScores.split(',').map(score => parseInt(score.trim()));
 			for (const score of foArray) {
@@ -877,7 +1130,6 @@
 				}
 			}
 
-			const subject = document.getElementById("subject").value;
 
 			const numFo = foArray.length;
 			const sorScoresArray = sorArray.map(score => score.split('/').map(Number));
@@ -892,24 +1144,42 @@
 			const foSum = foArray.reduce((acc, score) => acc + score, 0);
 			const foMax = numFo * 10;
 
-			const percentageFoSor = ((foSum + sorSum) / (foMax + sorMax)) * 50;
+			if (hasSoch === "да") {
+				percentageFoSor = ((foSum + sorSum) / (foMax + sorMax)) * 50;
+			} else {
+				percentageFoSor = ((foSum + sorSum) / (foMax + sorMax)) * 100;
+			}
 
 			let percentageSoch = 0;
 			if (hasSoch === "да") {
 				const [sochScore, sochMax] = sochScores.split('/').map(Number);
 				percentageSoch = (sochScore / sochMax) * 50;
 			}
+			
 
 			const overallPercentage = percentageFoSor + percentageSoch;
+			
+			let grade;
+			if (overallPercentage >= 85) {
+				grade = 5;
+			} else if (overallPercentage >= 65) {
+				grade = 4;
+			} else if (overallPercentage >= 45) {
+				grade = 3;
+			} else {
+				grade = 2;
+			}
+			
+			lastCalculation = { subject, percentageFoSor, percentageSoch, overallPercentage, grade };
 
-			const resultDiv = `
-				${translations[document.getElementById('language').value].resultSubject}: ${subject}<br>
-				${translations[document.getElementById('language').value].resultOverall}: ${percentageFoSor.toFixed(1)}% + ${percentageSoch.toFixed(1)}% = ${overallPercentage.toFixed(0)}%
-			`;
-
-		document.getElementById('result').innerHTML = resultDiv;
-		document.getElementById('export-button').style.display = 'block';
+			
+			
+			updateResult(lastCalculation);
+			
+			document.getElementById('export-button').style.display = 'block';
 		}
+
+		
 		
         document.getElementById('hasSoch').addEventListener('change', function () {
             const sochSection = document.getElementById('sochSection');
