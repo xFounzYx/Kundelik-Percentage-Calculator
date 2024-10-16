@@ -1245,7 +1245,6 @@
 			document.getElementById('hasSoch').addEventListener('change', function () {
 				const sochSection = document.getElementById('sochSection');
 				const timePeriodSection = document.getElementById('timePeriodSection');
-				const timePeriodSelect = document.getElementById('timePeriod');
 	
 				if (this.value === 'да') {
 					sochSection.style.display = 'block';
@@ -1253,7 +1252,6 @@
 				} else {
 					sochSection.style.display = 'none';
 					timePeriodSection.style.display = 'block';
-					timePeriodSelect.value = "half-year";
 				}
 				document.getElementById('result').innerHTML = '';
 			});
