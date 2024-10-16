@@ -90,6 +90,7 @@
         }
 
         .result {
+			margin-bottom: 20px;
             margin-top: 20px;
             padding: 15px;
             border-radius: 10px;
@@ -734,6 +735,15 @@
                 <option value="да" id="yes">Да</option>
             </select>
         </div>
+		
+		<div class="form-group" id="timePeriodSection" style="display:none;">
+			<label for="timePeriod">Посчитать за:</label>
+			<select id="timePeriod" oninput="validateForm()">
+				<option value="quarter">За четверть</option>
+				<option value="half-year">За полугодие</option>
+			</select>
+		</div>
+
 
         <div class="form-group" id="sochSection">
             <label for="sochScores" id="sochScores-label">Введите оценку СОЧ:</label>
@@ -772,28 +782,31 @@
 
 
 		<script>
-        const translations = {
-            ru: {
-                themeLabel: "Выберите тему:",
-                languageLabel: "Выберите язык:",
-                title: "Калькулятор процентов",
+				const translations = {
+			ru: {
+				themeLabel: "Выберите тему:",
+				languageLabel: "Выберите язык:",
+				title: "Калькулятор процентов",
 				importlabel: "Введите данные ниже, либо сделайте импорт из файла:",
 				importbutton: "Импорт из Excel",
 				redirectbutton: "Перейти в Kundelik.kz",
-				instructionbutton: "Инструкция",
-                subjectLabel: "Введите название предмета:",
-                foScoresLabel: "Введите ФО:",
-				foScoresPlaceholder: "Например: 8, 9, 10",
-                sorScoresLabel: "Введите оценки СОР:",
-				sorScoresPlaceholder: "Например: 8/10, 9/10, 10/10",
-                hasSochLabel: "Есть СОЧ?",
-                yes: "Да",
-                no: "Нет",
-                sochScoresLabel: "Введите оценку СОЧ:",
+      		  instructionbutton: "Инструкция",
+    		    subjectLabel: "Введите название предмета:",
+    		    foScoresLabel: "Введите ФО:",
+		        foScoresPlaceholder: "Например: 8, 9, 10",
+    		    sorScoresLabel: "Введите оценки СОР:",
+        		sorScoresPlaceholder: "Например: 8/10, 9/10, 10/10",
+        		hasSochLabel: "Есть СОЧ?",
+				yes: "Да",
+				no: "Нет",
+				sochScoresLabel: "Введите оценку СОЧ:",
 				sochScoresPlaceholder: "Например: 9/10",
-                calculateButton: "Рассчитать",
+				timePeriodLabel: "Посчитать за:",
+				quarter: "За четверть",
+				halfYear: "За полугодие",
+				calculateButton: "Рассчитать",
 				resultSubject: "Предмет",
-                resultOverall: "Ваш общий процент",
+				resultOverall: "Ваш общий процент",
 				resultGrade: "Ваша оценка",
 				exportbutton: "Экспорт в Excel",
 				instruction: `
@@ -804,36 +817,41 @@
 							</div> <div class="form-group">
 							2. Введите оценки ФО и СОР, используя формат "1, 2, 3" для ФО и "1/2, 3/4, 5/6" для СОР.<br>
 							</div> <div class="form-group">
-							3. Если у предмета предусмотрен СОЧ, выберите "Да" и введите оценку СОЧ в формате "1/2". (Если оценка выставляется за полугодие, нужно выбрать "Нет" и вписать оценки <big>за обе четверти</big>)<br>
+							3. Если по предмету есть СОЧ, выберите "Да" и введите оценку СОЧ в формате "1/2".<br>
 							</div> <div class="form-group">
-							4. Нажмите кнопку "Рассчитать", чтобы увидеть ваш результат и итоговую оценку.<br>
+							4. Если по предмету не пишется СОЧ, выберите "Нет" и выберите, за какой промежуток рассчитать процент.<br>
 							</div> <div class="form-group">
-							5. Для смены языка или темы используйте выпадающие списки наверху страницы.
+							5. Нажмите кнопку "Рассчитать", чтобы увидеть ваш результат и итоговую оценку.<br>
+							</div> <div class="form-group">
+							6. Для смены языка или темы используйте выпадающие списки наверху страницы.
 							</div>
 						</p>
 					`
-            },
-            en: {
-                themeLabel: "Select Theme:",
-                languageLabel: "Select Language:",
-                title: "Percentage Calculator",
+			},
+			en: {
+				themeLabel: "Select Theme:",
+				languageLabel: "Select Language:",
+				title: "Percentage Calculator",
 				importlabel: "Enter the data below, or import from a file:",
 				importbutton: "Import from Excel",
 				redirectbutton: "Go to Kundelik.kz",
 				instructionbutton: "Instruction",
-                subjectLabel: "Enter subject name:",
-                foScoresLabel: "Enter FAs:",
+				subjectLabel: "Enter subject name:",
+				foScoresLabel: "Enter FAs:",
 				foScoresPlaceholder: "For example: 8, 9, 10",
-                sorScoresLabel: "Enter SAU scores:",
+				sorScoresLabel: "Enter SAU scores:",
 				sorScoresPlaceholder: "For example: 8/10, 9/10, 10/10",
-                hasSochLabel: "Is there a SAT?",
-                yes: "Yes",
-                no: "No",
-                sochScoresLabel: "Enter SAT score:",
+				hasSochLabel: "Is there a SAT?",
+				yes: "Yes",
+				no: "No",
+				sochScoresLabel: "Enter SAT score:",
 				sochScoresPlaceholder: "For example: 9/10",
-                calculateButton: "Calculate",
-                resultSubject: "Subject",
-                resultOverall: "Your overall percentage",
+				timePeriodLabel: "Calculate for:",
+				quarter: "Quarter",
+				halfYear: "Half-year",
+				calculateButton: "Calculate",
+				resultSubject: "Subject",
+				resultOverall: "Your overall percentage",
 				resultGrade: "Your grade",
 				exportbutton: "Export to Excel",
 				instruction: `
@@ -844,36 +862,41 @@
 							</div> <div class="form-group">
 							2. Enter the FA and SAU scores using the format "1, 2, 3" for FA and "1/2, 3/4, 5/6" for SAU.<br>
 							</div> <div class="form-group">
-							3. If the subject has a SAT, select "Yes" and enter the SAT grade in the "1/2" format. (If the grade is set for half a year, select "No" and enter the grades <big> for both quarters</big>)<br>
+							3. If the subject has a SAT, select "Yes" and enter the SAT grade in the "1/2" format.<br>
 							</div> <div class="form-group">
-							4. Click the "Calculate" button to see your result and final grade.<br>
+							4. If the subject does not require a SAT, select "No" and choose the period for which to calculate the percentage.
 							</div> <div class="form-group">
-							5. To change the language or theme, use the drop-down lists at the top of the page.
+							5. Click the "Calculate" button to see your result and final grade.<br>
+							</div> <div class="form-group">
+							6. To change the language or theme, use the drop-down lists at the top of the page.
 							</div>
 						</p>
 					`
-            },
-            kk: {
-                themeLabel: "Тақырыпты таңдаңыз:",
-                languageLabel: "Тілді таңдаңыз:",
-                title: "Пайыз калькуляторы",
+			},
+			kk: {
+				themeLabel: "Тақырыпты таңдаңыз:",
+				languageLabel: "Тілді таңдаңыз:",
+				title: "Пайыз калькуляторы",
 				importlabel: "Төмендегі деректерді енгізіңіз немесе файлдан импорттаңыз:",
 				importbutton: "Excel-ден импорттау",
 				redirectbutton: "Өту Kundelik.kz",
 				instructionbutton: "Нұсқаулық",
-                subjectLabel: "Пән атауын енгізіңіз:",
-                foScoresLabel: "ФБ енгізіңіз:",
+				subjectLabel: "Пән атауын енгізіңіз:",
+				foScoresLabel: "ФБ енгізіңіз:",
 				foScoresPlaceholder: "Мысалы: 8, 9, 10",
-                sorScoresLabel: "БЖБ бағаларын енгізіңіз:",
+				sorScoresLabel: "БЖБ бағаларын енгізіңіз:",
 				sorScoresPlaceholder: "Мысалы: 8/10, 9/10, 10/10",
-                hasSochLabel: "ТЖБ бар ма?",
-                yes: "Иә",
-                no: "Жоқ",
-                sochScoresLabel: "ТЖБ бағасын енгізіңіз:",
-				sochScoresPlaceholder: "Мысалы: 9/10",
-                calculateButton: "Есептеу",
-                resultSubject: "Пән",
-                resultOverall: "Жалпы пайыз",
+				hasSochLabel: "ТЖБ бар ма?",
+				yes: "Иә",
+				no: "Жоқ",
+    		    sochScoresLabel: "ТЖБ бағасын енгізіңіз:",
+    		    sochScoresPlaceholder: "Мысалы: 9/10",
+    		    timePeriodLabel: "Қандай мерзімге есептеу:",
+    		    quarter: "Тоқсанға",
+    		    halfYear: "Жартыжылдыққа",
+    		    calculateButton: "Есептеу",
+				resultSubject: "Пән",
+				resultOverall: "Жалпы пайыз",
 				resultGrade: "Сіздің бағаңыз",
 				exportbutton: "Excel-ге экспорттау",
 				instruction: `
@@ -884,60 +907,85 @@
 						</div> <div class="form-group">
 						2. ФБ үшін "1, 2, 3" және БЖБ үшін "1/2, 3/4, 5/6" пішімін пайдаланып, ФБ және БЖБ бағаларын енгізіңіз.<br>
 						</div> <div class="form-group">
-						3. Егер пәніне ТЖБ болса, "Иә" тармағын таңдап, ТЖБ бағасын "1/2"форматында енгізіңіз. (Егер баға жартыжылдықта қойылса, сіз " жоқ " дегенді таңдап, <big> екі тоқсандағы </big>бағаларды енгізуіңіз керек)<br>
+						3. Егер пәнде ТЖБ болса, «Иә» опциясын таңдап, «1/2» пішімінде ТЖБ бағасын енгізіңіз.<br>
 						</div> <div class="form-group">
-						4. Нәтижені және қорытынды бағаны көру үшін "есептеу" түймесін басыңыз.<br>
+						4. Пән үшін ТЖБ жазылмаған болса, «Жоқ» тармағын таңдап, пайызды қай кезеңге есептеу керектігін таңдаңыз.
 						</div> <div class="form-group">
-						5. Тілді немесе тақырыпты өзгерту үшін беттің жоғарғы жағындағы ашылмалы тізімдерді пайдаланыңыз.
+						5. Нәтижені және қорытынды бағаны көру үшін "есептеу" түймесін басыңыз.<br>
+						</div> <div class="form-group">
+						6. Тілді немесе тақырыпты өзгерту үшін беттің жоғарғы жағындағы ашылмалы тізімдерді пайдаланыңыз.
 						</div>
 					</p>
 				`
             }
-        };
-		
-		let lastCalculation = null;
+		};
 
-        function changeLanguage() {
-            const language = document.getElementById('language').value;
-            const strings = translations[language];
-            document.getElementById('themeLabel').textContent = strings.themeLabel;
-            document.getElementById('languageLabel').textContent = strings.languageLabel;
-            document.getElementById('title').textContent = strings.title;
+
+
+		
+				let lastCalculation = null;
+
+      		function changeLanguage() {
+      		    const language = document.getElementById('language').value;
+				const strings = translations[language];
+    
+			document.getElementById('themeLabel').textContent = strings.themeLabel;
+			document.getElementById('languageLabel').textContent = strings.languageLabel;
+			document.getElementById('title').textContent = strings.title;
 			document.getElementById('import-label').textContent = strings.importlabel;
 			document.getElementById('import-button').textContent = strings.importbutton;
 			document.getElementById('redirect-button').textContent = strings.redirectbutton;
 			document.getElementById('instruction-button').textContent = strings.instructionbutton;
-            document.getElementById('subject-label').textContent = strings.subjectLabel;
-            document.getElementById('hasSoch-label').textContent = strings.hasSochLabel;
-            document.getElementById('foScores-label').textContent = strings.foScoresLabel;
-            document.getElementById('sorScores-label').textContent = strings.sorScoresLabel;
-            document.getElementById('sochScores-label').textContent = strings.sochScoresLabel;
-            document.getElementById('calculate-button').textContent = strings.calculateButton;
+			document.getElementById('subject-label').textContent = strings.subjectLabel;
+			document.getElementById('hasSoch-label').textContent = strings.hasSochLabel;
+			document.getElementById('foScores-label').textContent = strings.foScoresLabel;
+			document.getElementById('sorScores-label').textContent = strings.sorScoresLabel;
+			document.getElementById('sochScores-label').textContent = strings.sochScoresLabel;
+			document.getElementById('timePeriodSection').querySelector('label').textContent = strings.timePeriodLabel;
+    
+			const timePeriodSelect = document.getElementById('timePeriod');
+			timePeriodSelect.options[0].text = strings.quarter;
+			timePeriodSelect.options[1].text = strings.halfYear;
+    
+			document.getElementById('calculate-button').textContent = strings.calculateButton;
 			document.getElementById('export-button').textContent = strings.exportbutton;
 			document.getElementById('foScores').placeholder = strings.foScoresPlaceholder;
 			document.getElementById('sorScores').placeholder = strings.sorScoresPlaceholder;
 			document.getElementById('sochScores').placeholder = strings.sochScoresPlaceholder;
-            document.getElementById('yes').textContent = strings.yes;
-            document.getElementById('no').textContent = strings.no;
+			document.getElementById('yes').textContent = strings.yes;
+			document.getElementById('no').textContent = strings.no;
 			document.querySelector('.modal-content').innerHTML = strings.instruction;
-			if (lastCalculation) {
-				updateResult(lastCalculation);
-			}
-			localStorage.setItem('language', language);
-        }
+					if (lastCalculation) {
+						updateResult(lastCalculation);
+					}
+					localStorage.setItem('language', language);
+				}
 		
 		function updateResult({ subject, percentageFoSor, percentageSoch, overallPercentage, grade }) {
 			const language = document.getElementById('language').value;
 			const strings = translations[language];
+			const hasSoch = document.getElementById("hasSoch").value;
 
-			const resultDiv = `
+			let resultDiv = `
 				${strings.resultSubject}: ${subject}<br>
-				${strings.resultOverall}: ${percentageFoSor.toFixed(1)}% + ${percentageSoch.toFixed(1)}% = ${overallPercentage.toFixed(0)}%<br>
-				${translations[document.getElementById('language').value].resultGrade} - ${grade}
+				${strings.resultOverall}: ${percentageFoSor.toFixed(1)}%
 			`;
+
+			if (hasSoch === 'да') {
+				resultDiv += ` + ${percentageSoch.toFixed(1)}% = ${overallPercentage.toFixed(0)}%`;
+			} else {
+				resultDiv += ` = ${percentageFoSor.toFixed(0)}%`; // Только ФО и СОР
+			}
+
+			const timePeriod = document.getElementById("timePeriod").value;
+    
+			if (timePeriod !== 'quarter' || hasSoch === 'да') {
+				resultDiv += `<br>${strings.resultGrade} - ${grade}`;
+			}
 
 			document.getElementById('result').innerHTML = resultDiv;
 		}
+
 		
 		function changeTheme() {
             const selectedTheme = document.getElementById('theme').value;
@@ -998,7 +1046,13 @@
 		
 		window.onload = function() {
             loadSettings();
-        };
+				const hasSoch = document.getElementById('hasSoch').value;
+				const timePeriodSection = document.getElementById('timePeriodSection');
+    
+			if (hasSoch === 'нет') {
+				timePeriodSection.style.display = 'block';
+			}
+				};
 		
 		function validateForm() {
 			const subject = document.getElementById("subject").value.trim();
@@ -1040,7 +1094,7 @@
 
 		function importFromExcel(event) {
 			const file = event.target.files[0];
-			const reader = new FileReader();
+		const reader = new FileReader();
 
 		reader.onload = function(e) {
 			const data = new Uint8Array(e.target.result);
@@ -1056,19 +1110,25 @@
             document.getElementById("sochScores").value = jsonData[1][3] || '';
 
             const sochScore = jsonData[1][3];
-            if (sochScore && sochScore !== '0/1') {
-                document.getElementById("hasSoch").value = "да";
-                document.getElementById('sochSection').style.display = 'block';
+            const hasSoch = sochScore && sochScore !== '0/1' ? 'да' : 'нет';
+            document.getElementById("hasSoch").value = hasSoch;
+            const sochSection = document.getElementById("sochSection");
+            const timePeriodSection = document.getElementById("timePeriodSection");
+
+            if (hasSoch === 'да') {
+                sochSection.style.display = 'block';
+                timePeriodSection.style.display = 'none';  // Скрываем "Посчитать за"
             } else {
-                document.getElementById("hasSoch").value = "нет";
-                document.getElementById('sochSection').style.display = 'none';
+                sochSection.style.display = 'none';
+                timePeriodSection.style.display = 'block';  // Показываем "Посчитать за"
             }
 
-            validateForm();
-		}
-		};
 
-		reader.readAsArrayBuffer(file);
+            validateForm();
+			}
+			};
+
+			reader.readAsArrayBuffer(file);
 		}
 
 
@@ -1084,6 +1144,7 @@
 			const sorScores = document.getElementById("sorScores").value.trim();
 			const hasSoch = document.getElementById("hasSoch").value;
 			const sochScores = document.getElementById("sochScores").value.trim();
+			const timePeriod = document.getElementById("timePeriod").value;
 
 			if (subject === "") {
 				showError("Поле 'Название предмета' не должно быть пустым!", "subject");
@@ -1140,14 +1201,19 @@
 				sorSum += score;
 				sorMax += max;
 			});
-
+        
 			const foSum = foArray.reduce((acc, score) => acc + score, 0);
-			const foMax = numFo * 10;
+			const foMax = foArray.length * 10;
 
-			if (hasSoch === "да") {
-				percentageFoSor = ((foSum + sorSum) / (foMax + sorMax)) * 50;
+			let percentageFoSor;
+			if (hasSoch === 'нет') {
+				if (timePeriod === 'quarter') {
+					percentageFoSor = ((foSum + sorSum) / (foMax + sorMax)) * 50;
+				} else {
+					percentageFoSor = ((foSum + sorSum) / (foMax + sorMax)) * 100;
+				}
 			} else {
-				percentageFoSor = ((foSum + sorSum) / (foMax + sorMax)) * 100;
+				percentageFoSor = ((foSum + sorSum) / (foMax + sorMax)) * 50;
 			}
 
 			let percentageSoch = 0;
@@ -1155,10 +1221,8 @@
 				const [sochScore, sochMax] = sochScores.split('/').map(Number);
 				percentageSoch = (sochScore / sochMax) * 50;
 			}
-			
 
 			const overallPercentage = percentageFoSor + percentageSoch;
-			
 			let grade;
 			if (overallPercentage >= 85) {
 				grade = 5;
@@ -1169,26 +1233,33 @@
 			} else {
 				grade = 2;
 			}
-			
+
 			lastCalculation = { subject, percentageFoSor, percentageSoch, overallPercentage, grade };
-
-			
-			
 			updateResult(lastCalculation);
-			
+        
 			document.getElementById('export-button').style.display = 'block';
-		}
+			}
 
 		
 		
-        document.getElementById('hasSoch').addEventListener('change', function () {
-            const sochSection = document.getElementById('sochSection');
-            if (this.value === 'да') {
-                sochSection.style.display = 'block';
-            } else {
-                sochSection.style.display = 'none';
-            }
-        });
+			document.getElementById('hasSoch').addEventListener('change', function () {
+				const sochSection = document.getElementById('sochSection');
+				const timePeriodSection = document.getElementById('timePeriodSection');
+				const timePeriodSelect = document.getElementById('timePeriod');
+	
+				if (this.value === 'да') {
+					sochSection.style.display = 'block';
+					timePeriodSection.style.display = 'none';
+				} else {
+					sochSection.style.display = 'none';
+					timePeriodSection.style.display = 'block';
+					timePeriodSelect.value = "half-year";
+				}
+				document.getElementById('result').innerHTML = '';
+			});
+
+		
+		
 
         document.getElementById('sochSection').style.display = 'none';
     </script>
