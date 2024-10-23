@@ -1166,21 +1166,21 @@
 				return;
 			}
 
-			const foArray = foScores.split(',').map(score => parseInt(score.trim()));
+			const foArray = foScores.split(/[\s,]+/).map(score => parseInt(score.trim()));
 			for (const score of foArray) {
-				if (isNaN(score) || score < 1 || score > 10) {
-					showError("Оценки ФО должны быть числами от 1 до 10!", "foScores");
-					return;
-				}
+ 			   if (isNaN(score) || score < 1 || score > 10) {
+   			     showError("Оценки ФО должны быть числами от 1 до 10!", "foScores");
+   			     return;
+ 			   }
 			}
 
-			const sorArray = sorScores.split(',').map(score => score.trim());
+			const sorArray = sorScores.split(/[\s,]+/).map(score => score.trim());
 			for (const score of sorArray) {
-				const [num1, num2] = score.split('/').map(Number);
-				if (isNaN(num1) || isNaN(num2) || num1 < 0 || num1 > num2) {
-					showError("Оценки СОР должны быть в формате X/Y, где X <= Y!", "sorScores");
-					return;
-				}
+  			  const [num1, num2] = score.split('/').map(Number);
+			    if (isNaN(num1) || isNaN(num2) || num1 < 0 || num1 > num2) {
+			        showError("Оценки СОР должны быть в формате X/Y, где X <= Y!", "sorScores");
+   			     return;
+ 			   }
 			}
 			
 			if (hasSoch === "да") {
