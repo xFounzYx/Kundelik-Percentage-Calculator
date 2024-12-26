@@ -498,12 +498,12 @@
 				document.getElementById('result').innerHTML = '';
 			});
 
-			document.addEventListener('DOMContentLoaded', () => {
-       				const calculateButton = document.getElementById('calculate-button');
+			window.addEventListener('load', () => {
+        			const calculateButton = document.getElementById('calculate-button');
         			if (calculateButton) {
             				setTimeout(() => {
                 				calculateButton.click();
-            				}, 1000);
+            				}, 2000); // Задержка в 2 секунды
         			}
     			});
 		
