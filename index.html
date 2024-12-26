@@ -1052,16 +1052,17 @@
 			if (hasSoch === 'нет') {
 				timePeriodSection.style.display = 'block';
 			}
-			
-			  const params = new URLSearchParams(window.location.search);
+		
+		 const params = new URLSearchParams(window.location.search);
   const subject = params.get("subject");
   const foScores = params.get("foScores");
   const sorScores = params.get("sorScores");
   const sochScores = params.get("sochScores");
 
+  // Заполнение полей
   if (subject) document.getElementById("subject").value = subject;
-  if (foScores) document.getElementById("foScores").value = foScores;
-  if (sorScores) document.getElementById("sorScores").value = sorScores;
+  if (foScores) document.getElementById("foScores").value = foScores; // Числа
+  if (sorScores) document.getElementById("sorScores").value = sorScores; // X/Y
 
   if (sochScores && sochScores !== "") {
     document.getElementById("hasSoch").value = "да";
@@ -1074,9 +1075,9 @@
     document.getElementById("timePeriodSection").style.display = "block";
   }
 
-  validateForm();
+  validateForm(); // Проверка данных
 };
-				
+		
 		
 		
 		function validateForm() {
