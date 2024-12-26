@@ -498,15 +498,5 @@
 				document.getElementById('result').innerHTML = '';
 			});
 
-			window.addEventListener('load', () => {
-        			const calculateButton = document.getElementById('calculate-button');
-        			if (calculateButton) {
-            				setTimeout(() => {
-                				calculateButton.click();
-            				}, 2000); // Задержка в 2 секунды
-        			}
-    			});
-		
-		
-
+			
         document.getElementById('sochSection').style.display = 'none';
