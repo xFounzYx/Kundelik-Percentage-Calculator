@@ -498,6 +498,12 @@
 				document.getElementById('result').innerHTML = '';
 			});
 
+			document.addEventListener('DOMContentLoaded', () => {
+        const calculateButton = document.getElementById('calculate-button');
+        if (calculateButton) {
+            calculateButton.click();
+        }
+    });
 		
 		
 
