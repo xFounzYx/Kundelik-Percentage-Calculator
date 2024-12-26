@@ -499,11 +499,13 @@
 			});
 
 			document.addEventListener('DOMContentLoaded', () => {
-        const calculateButton = document.getElementById('calculate-button');
-        if (calculateButton) {
-            calculateButton.click();
-        }
-    });
+       				const calculateButton = document.getElementById('calculate-button');
+        			if (calculateButton) {
+            				setTimeout(() => {
+                				calculateButton.click();
+            				}, 1000);
+        			}
+    			});
 		
 		
 
