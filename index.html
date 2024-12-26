@@ -1250,11 +1250,11 @@
 
 			const overallPercentage = percentageFoSor + percentageSoch;
 			let grade;
-			if (overallPercentage >= 85) {
+			if (overallPercentage.toFixed(0) >= 85) {
 				grade = 5;
-			} else if (overallPercentage >= 65) {
+			} else if (overallPercentage.toFixed(0) >= 65) {
 				grade = 4;
-			} else if (overallPercentage >= 45) {
+			} else if (overallPercentage.toFixed(0) >= 45) {
 				grade = 3;
 			} else {
 				grade = 2;
