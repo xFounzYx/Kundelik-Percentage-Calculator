@@ -1052,7 +1052,32 @@
 			if (hasSoch === 'нет') {
 				timePeriodSection.style.display = 'block';
 			}
-				};
+			
+			  const params = new URLSearchParams(window.location.search);
+  const subject = params.get("subject");
+  const foScores = params.get("foScores");
+  const sorScores = params.get("sorScores");
+  const sochScores = params.get("sochScores");
+
+  if (subject) document.getElementById("subject").value = subject;
+  if (foScores) document.getElementById("foScores").value = foScores;
+  if (sorScores) document.getElementById("sorScores").value = sorScores;
+
+  if (sochScores && sochScores !== "") {
+    document.getElementById("hasSoch").value = "да";
+    document.getElementById("sochScores").value = sochScores;
+    document.getElementById("sochSection").style.display = "block";
+    document.getElementById("timePeriodSection").style.display = "none";
+  } else {
+    document.getElementById("hasSoch").value = "нет";
+    document.getElementById("sochSection").style.display = "none";
+    document.getElementById("timePeriodSection").style.display = "block";
+  }
+
+  validateForm();
+};
+				
+		
 		
 		function validateForm() {
 			const subject = document.getElementById("subject").value.trim();
